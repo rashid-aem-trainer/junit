@@ -1,0 +1,93 @@
+package com.bt.core.models;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class JacksonMapperProviderTest {
+	
+	JacksonMapperProvider jacksonMapperProvider = null;	
+
+	Logger logger = LoggerFactory.getLogger(getClass());
+
+	@BeforeEach
+	void init(){
+		jacksonMapperProvider = new JacksonMapperProvider();
+	}
+	
+	@Test
+	void activateTest() {
+		Map<String, Object> properties = new HashMap<>();
+		JacksonMapperProviderConfiguration config = mock(JacksonMapperProviderConfiguration.class);
+		when(config.jacksonMapperProvider_mapperName()).thenReturn("mapper name");
+		when(config.jacksonMapperProvider_getterVisibility_dropdown()).thenReturn("default");
+		when(config.jacksonMapperProvider_fieldVisibility_dropdown()).thenReturn("default");
+		jacksonMapperProvider.activate(properties, config);
+		assertEquals("mapper name",jacksonMapperProvider.getName());
+		assertNotNull(jacksonMapperProvider.getType());
+	}
+	
+	@Test
+	void stringReadTest() {
+		String linkJson = "{\"linkName\":\"Sample Link Name\",\"linkTitle\":\"Sample Link Title\"}";
+		try {
+			this.activateTest();
+			Link linkObj = jacksonMapperProvider.read(linkJson, Link.class);
+			assertEquals("Sample Link Name", linkObj.getLinkName());
+			assertEquals("Sample Link Title", linkObj.getLinkTitle());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+	}
+	
+	@Test
+	void inputStreamReadTest() {
+		String linkJson = "{\"linkName\":\"Sample Link Name\",\"linkTitle\":\"Sample Link Title\"}";
+		try {
+			this.activateTest();
+			Link linkObj = jacksonMapperProvider.read(new ByteArrayInputStream(linkJson.getBytes()), Link.class);
+			Link writeLinkObj = new Link("Sample Link Name", "Sample Link Title");
+			jacksonMapperProvider.write(writeLinkObj);
+			jacksonMapperProvider.write(writeLinkObj, Link.class);
+			assertEquals("Sample Link Name", linkObj.getLinkName());
+			assertEquals("Sample Link Title", linkObj.getLinkTitle());
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+	}
+
+	static class Link {
+		
+		private String linkName;
+		
+		private String linkTitle;
+
+		public String getLinkName() {
+			return linkName;
+		}
+
+		public String getLinkTitle() {
+			return linkTitle;
+		}
+		
+		public Link() {}
+		
+		public Link(String linkName, String linkTitle) {
+			super();
+			this.linkName = linkName;
+			this.linkTitle = linkTitle;
+		}
+
+	}
+
+}
