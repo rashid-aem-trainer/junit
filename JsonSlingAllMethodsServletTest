@@ -1,0 +1,100 @@
+package com.bt.core.models;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import junitx.util.PrivateAccessor;
+class JsonSlingAllMethodsServletTest {
+	
+	private static final Class Boolean = null;
+
+	JsonSlingAllMethodsServlet jsams = null;
+	
+	Logger logger = LoggerFactory.getLogger("");
+	
+	@BeforeEach
+	void init(){
+		jsams = new JsonSlingAllMethodsServlet() {
+			
+		};
+	}
+
+	@Test
+	void testGetSource() {
+			try {
+				PrivateAccessor.setField(jsams, "source", "sample source");
+			    Method getSourceMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod("getSource");
+			    getSourceMethod.setAccessible(true);
+			    assertEquals( "sample source", (String)getSourceMethod.invoke(jsams));
+			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				logger.error(e.getMessage());
+			}
+
+	}
+	
+	@Test
+	void testGetContentType() {
+			try {
+			    Method getContentTypeMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod("getContentType");
+			    getContentTypeMethod.setAccessible(true);
+			    assertEquals("application/json", (String)getContentTypeMethod.invoke(jsams));
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				logger.error(e.getMessage());
+			}
+	}
+	
+	@Test
+	void testGetCharacterEncoding() {
+			try {
+				PrivateAccessor.setField(jsams, "characterEncoding", "UTF-8");
+			    Method getCharacterEncodingMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod("getCharacterEncoding");
+			    getCharacterEncodingMethod.setAccessible(true);
+			    assertEquals("UTF-8", (String)getCharacterEncodingMethod.invoke(jsams));
+			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				logger.error(e.getMessage());
+			}
+	}
+	
+
+	@Test
+	void testGetJsonMapperProviderName() {
+			try {
+				PrivateAccessor.setField(jsams, "jsonMapperProviderName", "sample jsonMapperProviderName");
+			    Method getJsonMapperProviderNameMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod("getJsonMapperProviderName");
+			    getJsonMapperProviderNameMethod.setAccessible(true);
+			    assertEquals("sample jsonMapperProviderName", (String)getJsonMapperProviderNameMethod.invoke(jsams));
+			} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				logger.error(e.getMessage());
+			}
+	}
+	
+	@Test
+	void testBuildResponse() {
+		try {
+			SlingHttpServletRequest request = mock(SlingHttpServletRequest.class);
+			SlingHttpServletResponse response = mock(SlingHttpServletResponse.class);
+			PrivateAccessor.setField(jsams, "characterEncoding", "UTF-8");
+			PrivateAccessor.setField(jsams, "dispatcherNoCache", true);
+		    Method buildResponseMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod(
+		            "buildResponse", SlingHttpServletRequest.class, SlingHttpServletResponse.class);
+		    buildResponseMethod.setAccessible(true);
+		    buildResponseMethod.invoke(jsams, request, response);
+		    Method getDispatcherNoCacheMethod = JsonSlingAllMethodsServlet.class.getDeclaredMethod("getDispatcherNoCache");
+		    getDispatcherNoCacheMethod.setAccessible(true);
+		    assertEquals(true,(boolean)getDispatcherNoCacheMethod.invoke(jsams));
+		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			logger.error(e.getMessage());
+		}
+	}
+}
